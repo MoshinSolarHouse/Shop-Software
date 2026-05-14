@@ -25,6 +25,8 @@ const RESOURCE_LABELS: Record<string, string> = {
   categories: 'Categories',
   customers: 'Customers',
   sales: 'Sales',
+  suppliers: 'Suppliers',       // ADD
+  purchases: 'Purchases',       // ADD
   payments: 'Payments',
   reports: 'Reports',
   users: 'Users',
@@ -47,6 +49,8 @@ const DEFAULTS: Record<RoleKey, PermMap> = {
     categories: ['read'],
     customers: ['read', 'create'],
     sales: ['read', 'create'],
+    suppliers: [],                 // ADD — no access by default
+    purchases: [],                 // ADD — no access by default
     payments: ['read', 'create'],
     reports: [],
     shops: ['read'],

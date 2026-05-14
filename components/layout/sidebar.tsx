@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Package, ShoppingCart, Users, ChartBar as BarChart3, Store, ChevronLeft, ChevronRight, FolderOpen, Shield } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, ChartBar as BarChart3, Store, ChevronLeft, ChevronRight, FolderOpen, Shield, Truck, ShoppingBag } from 'lucide-react';
 
 const navGroups = [
   {
@@ -20,12 +20,14 @@ const navGroups = [
     items: [
       { href: '/categories', label: 'Categories', icon: FolderOpen, resource: 'categories', action: 'read' },
       { href: '/products', label: 'Products', icon: Package, resource: 'products', action: 'read' },
+      { href: '/suppliers', label: 'Suppliers', icon: Truck, resource: 'suppliers', action: 'read' },
     ],
   },
   {
     label: 'Transactions',
     items: [
       { href: '/sales', label: 'Sales', icon: ShoppingCart, resource: 'sales', action: 'read' },
+      { href: '/purchases', label: 'Purchases', icon: ShoppingBag, resource: 'purchases', action: 'read' },
     ],
   },
   {
