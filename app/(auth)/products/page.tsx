@@ -151,48 +151,50 @@
 //   );
 // }
 
+"use client";
 
-
-
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import { useShop } from '@/lib/shop-context';
-import { useAuth } from '@/lib/auth-context';
-import { apiFetch } from '@/lib/api';
-import { PageHeader } from '@/components/ui/page-header';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Modal } from '@/components/ui/modal';
-import { SearchInput } from '@/components/ui/search-input';
-import { DataTable } from '@/components/ui/data-table';
-import { formatPKR } from '@/lib/utils';
-import { toast } from 'sonner';
-import { Plus, Pencil, Package, TriangleAlert as AlertTriangle } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { useShop } from "@/lib/shop-context";
+import { useAuth } from "@/lib/auth-context";
+import { apiFetch } from "@/lib/api";
+import { PageHeader } from "@/components/ui/page-header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
+import { SearchInput } from "@/components/ui/search-input";
+import { DataTable } from "@/components/ui/data-table";
+import { formatPKR } from "@/lib/utils";
+import { toast } from "sonner";
+import {
+  Plus,
+  Pencil,
+  Package,
+  TriangleAlert as AlertTriangle,
+} from "lucide-react";
 
 export default function ProductsPage() {
   const { activeShopId } = useShop();
   const { hasPermission } = useAuth();
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
-  const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [form, setForm] = useState({
-    name: '',
-    categoryId: '',
-    unit: 'piece',
-    costPrice: '',
-    salePrice: '',
-    stock: '',
-    lowStockThreshold: '5',
+    name: "",
+    categoryId: "",
+    unit: "piece",
+    costPrice: "",
+    salePrice: "",
+    stock: "",
+    lowStockThreshold: "5",
     images: [] as string[],
-    imageMethod: 'url',
-    currentImage: '',
+    imageMethod: "url",
+    currentImage: "",
   });
 
   useEffect(() => {
@@ -220,7 +222,18 @@ export default function ProductsPage() {
 
   function openAdd() {
     setEditing(null);
-    setForm({ name: '', categoryId: '', unit: 'piece', costPrice: '', salePrice: '', stock: '', lowStockThreshold: '5', images: [], imageMethod: 'url', currentImage: '' });
+    setForm({
+      name: "",
+      categoryId: "",
+      unit: "piece",
+      costPrice: "",
+      salePrice: "",
+      stock: "",
+      lowStockThreshold: "5",
+      images: [],
+      imageMethod: "url",
+      currentImage: "",
+    });
     setModalOpen(true);
   }
 
@@ -228,21 +241,24 @@ export default function ProductsPage() {
     setEditing(p);
     setForm({
       name: p.name,
-      categoryId: p.categoryId?._id || p.categoryId || '',
+      categoryId: p.categoryId?._id || p.categoryId || "",
       unit: p.unit,
       costPrice: String(p.costPrice),
       salePrice: String(p.salePrice),
       stock: String(p.stock),
       lowStockThreshold: String(p.lowStockThreshold),
       images: p.images || [],
-      imageMethod: 'url',
-      currentImage: '',
+      imageMethod: "url",
+      currentImage: "",
     });
     setModalOpen(true);
   }
 
   async function handleSave() {
-    if (!form.name.trim()) { toast.error('Product name is required'); return; }
+    if (!form.name.trim()) {
+      toast.error("Product name is required");
+      return;
+    }
     setSaving(true);
     try {
       const payload = {
@@ -257,27 +273,46 @@ export default function ProductsPage() {
         images: form.images,
       };
       if (editing) {
-        const res = await apiFetch(`/api/products/${editing._id}`, { method: 'PUT', body: JSON.stringify(payload) });
-        if (res.success) toast.success('Product updated'); else toast.error(res.message);
+        const res = await apiFetch(`/api/products/${editing._id}`, {
+          method: "PUT",
+          body: JSON.stringify(payload),
+        });
+        if (res.success) toast.success("Product updated");
+        else toast.error(res.message);
       } else {
-        const res = await apiFetch('/api/products', { method: 'POST', body: JSON.stringify(payload) });
-        if (res.success) toast.success('Product created'); else toast.error(res.message);
+        const res = await apiFetch("/api/products", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+        if (res.success) toast.success("Product created");
+        else toast.error(res.message);
       }
       setModalOpen(false);
       loadProducts();
-    } catch (err: any) { toast.error(err.message); }
+    } catch (err: any) {
+      toast.error(err.message);
+    }
     setSaving(false);
   }
 
   async function toggleActive(p: any) {
-    const res = await apiFetch(`/api/products/${p._id}`, { method: 'PUT', body: JSON.stringify({ isActive: !p.isActive }) });
-    if (res.success) { toast.success(p.isActive ? 'Product deactivated' : 'Product activated'); loadProducts(); }
-    else toast.error(res.message);
+    const res = await apiFetch(`/api/products/${p._id}`, {
+      method: "PUT",
+      body: JSON.stringify({ isActive: !p.isActive }),
+    });
+    if (res.success) {
+      toast.success(p.isActive ? "Product deactivated" : "Product activated");
+      loadProducts();
+    } else toast.error(res.message);
   }
 
   function addImage() {
     if (form.currentImage && !form.images.includes(form.currentImage)) {
-      setForm({ ...form, images: [...form.images, form.currentImage], currentImage: '' });
+      setForm({
+        ...form,
+        images: [...form.images, form.currentImage],
+        currentImage: "",
+      });
     }
   }
 
@@ -288,55 +323,120 @@ export default function ProductsPage() {
   // Filtered list
   const filtered = products.filter((p) => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchCategory = !categoryFilter || (p.categoryId?._id || p.categoryId) === categoryFilter;
+    const matchCategory =
+      !categoryFilter || (p.categoryId?._id || p.categoryId) === categoryFilter;
     return matchSearch && matchCategory;
   });
 
   // Summary totals
-  const totalCost = filtered.reduce((sum, p) => sum + (p.costPrice || 0), 0);
-  const totalSale = filtered.reduce((sum, p) => sum + (p.salePrice || 0), 0);
+  // const totalCost = filtered.reduce((sum, p) => sum + (p.costPrice || 0), 0);
+  // const totalSale = filtered.reduce((sum, p) => sum + (p.salePrice || 0), 0);
+
+  const totalCost = filtered.reduce(
+    (sum, p) => sum + (p.costPrice || 0) * (p.stock || 0),
+    0,
+  );
+
+  const totalSale = filtered.reduce(
+    (sum, p) => sum + (p.salePrice || 0) * (p.stock || 0),
+    0,
+  );
+
   const totalStock = filtered.reduce((sum, p) => sum + (p.stock || 0), 0);
-  const totalCategories = new Set(filtered.map((p) => p.categoryId?._id || p.categoryId).filter(Boolean)).size;
+  const totalCategories = new Set(
+    filtered.map((p) => p.categoryId?._id || p.categoryId).filter(Boolean),
+  ).size;
 
   // Pagination
   const totalPages = Math.ceil(filtered.length / pageSize);
-  const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginated = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
 
   const columns = [
     {
-      key: 'image', label: '', render: (row: any) => row.images?.[0]
-        ? <img src={row.images[0]} alt="" className="w-8 h-8 rounded object-cover" />
-        : <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center"><Package className="w-4 h-4 text-gray-400" /></div>,
+      key: "image",
+      label: "",
+      render: (row: any) =>
+        row.images?.[0] ? (
+          <img
+            src={row.images[0]}
+            alt=""
+            className="w-8 h-8 rounded object-cover"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center">
+            <Package className="w-4 h-4 text-gray-400" />
+          </div>
+        ),
     },
     {
-      key: 'name', label: 'Name', render: (row: any) => (
+      key: "name",
+      label: "Name",
+      render: (row: any) => (
         <div className="flex items-center gap-1.5">
           <span className="font-medium">{row.name}</span>
-          {row.stock <= row.lowStockThreshold && <AlertTriangle className="w-3 h-3 text-yellow-500" />}
+          {row.stock <= row.lowStockThreshold && (
+            <AlertTriangle className="w-3 h-3 text-yellow-500" />
+          )}
         </div>
       ),
     },
-    { key: 'category', label: 'Category', render: (row: any) => row.categoryId?.name || '-' },
-    { key: 'costPrice', label: 'Cost', render: (row: any) => formatPKR(row.costPrice) },
-    { key: 'salePrice', label: 'Sale', render: (row: any) => formatPKR(row.salePrice) },
     {
-      key: 'stock', label: 'Stock', render: (row: any) => (
-        <span className={row.stock <= row.lowStockThreshold ? 'text-red-600 font-medium' : ''}>
-          {row.stock}{row.stock <= row.lowStockThreshold ? ' (Low)' : ''}
+      key: "category",
+      label: "Category",
+      render: (row: any) => row.categoryId?.name || "-",
+    },
+    {
+      key: "costPrice",
+      label: "Cost",
+      render: (row: any) => formatPKR(row.costPrice),
+    },
+    {
+      key: "salePrice",
+      label: "Sale",
+      render: (row: any) => formatPKR(row.salePrice),
+    },
+    {
+      key: "stock",
+      label: "Stock",
+      render: (row: any) => (
+        <span
+          className={
+            row.stock <= row.lowStockThreshold ? "text-red-600 font-medium" : ""
+          }
+        >
+          {row.stock}
+          {row.stock <= row.lowStockThreshold ? " (Low)" : ""}
         </span>
       ),
     },
     {
-      key: 'actions', label: '', render: (row: any) => (
+      key: "actions",
+      label: "",
+      render: (row: any) => (
         <div className="flex gap-1">
-          {hasPermission('products', 'update') && (
-            <button onClick={(e) => { e.stopPropagation(); openEdit(row); }} className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600">
+          {hasPermission("products", "update") && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                openEdit(row);
+              }}
+              className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+            >
               <Pencil className="w-3 h-3" />
             </button>
           )}
-          {hasPermission('products', 'delete') && (
-            <button onClick={(e) => { e.stopPropagation(); toggleActive(row); }} className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-600 text-xs">
-              {row.isActive ? 'Deactivate' : 'Activate'}
+          {hasPermission("products", "delete") && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleActive(row);
+              }}
+              className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-600 text-xs"
+            >
+              {row.isActive ? "Deactivate" : "Activate"}
             </button>
           )}
         </div>
@@ -344,7 +444,12 @@ export default function ProductsPage() {
     },
   ];
 
-  if (!activeShopId) return <div className="text-center py-12 text-sm text-gray-400">Select a shop first</div>;
+  if (!activeShopId)
+    return (
+      <div className="text-center py-12 text-sm text-gray-400">
+        Select a shop first
+      </div>
+    );
 
   return (
     <div>
@@ -352,22 +457,37 @@ export default function ProductsPage() {
         title="Products"
         description="Manage your product inventory"
         action={
-          hasPermission('products', 'create')
-            ? <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs h-8" onClick={openAdd}><Plus className="w-3.5 h-3.5 mr-1" /> Add Product</Button>
-            : undefined
+          hasPermission("products", "create") ? (
+            <Button
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white text-xs h-8"
+              onClick={openAdd}
+            >
+              <Plus className="w-3.5 h-3.5 mr-1" /> Add Product
+            </Button>
+          ) : undefined
         }
       />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2 mb-3">
-        <SearchInput value={search} onChange={setSearch} placeholder="Search products..." className="w-64" />
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Search products..."
+          className="w-64"
+        />
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
           className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
         >
           <option value="">All Categories</option>
-          {categories.map((c: any) => <option key={c._id} value={c._id}>{c.name}</option>)}
+          {categories.map((c: any) => (
+            <option key={c._id} value={c._id}>
+              {c.name}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -375,20 +495,30 @@ export default function ProductsPage() {
       <div className="grid grid-cols-4 gap-3 mb-3">
         <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
           <p className="text-xs text-gray-500 mb-0.5">Total Products</p>
-          <p className="text-lg font-bold text-gray-900">{filtered.length} <span className="text-sm font-normal text-gray-400">types</span></p>
+          <p className="text-lg font-bold text-gray-900">
+            {filtered.length}{" "}
+            <span className="text-sm font-normal text-gray-400">types</span>
+          </p>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
           <p className="text-xs text-gray-500 mb-0.5">Total Cost Value</p>
-          <p className="text-lg font-bold text-blue-600">{formatPKR(totalCost)}</p>
+          <p className="text-lg font-bold text-blue-600">
+            {formatPKR(totalCost)}
+          </p>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
           <p className="text-xs text-gray-500 mb-0.5">Total Sale Value</p>
-          <p className="text-lg font-bold text-green-600">{formatPKR(totalSale)}</p>
+          <p className="text-lg font-bold text-green-600">
+            {formatPKR(totalSale)}
+          </p>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
           <p className="text-xs text-gray-500 mb-0.5">Categories / Stock</p>
           <p className="text-lg font-bold text-gray-900">
-            {totalCategories} <span className="text-sm font-normal text-gray-400">cats</span> · {totalStock} <span className="text-sm font-normal text-gray-400">units</span>
+            {totalCategories}{" "}
+            <span className="text-sm font-normal text-gray-400">cats</span> ·{" "}
+            {totalStock}{" "}
+            <span className="text-sm font-normal text-gray-400">units</span>
           </p>
         </div>
       </div>
@@ -396,7 +526,9 @@ export default function ProductsPage() {
       {/* Page size + count row */}
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs text-gray-500">
-          Showing {filtered.length === 0 ? 0 : (currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, filtered.length)} of {filtered.length}
+          Showing {filtered.length === 0 ? 0 : (currentPage - 1) * pageSize + 1}
+          –{Math.min(currentPage * pageSize, filtered.length)} of{" "}
+          {filtered.length}
         </p>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500">Rows per page:</span>
@@ -405,62 +537,135 @@ export default function ProductsPage() {
             onChange={(e) => setPageSize(Number(e.target.value))}
             className="rounded border border-gray-200 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
           >
-            {[5, 10, 25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
+            {[5, 10, 25, 50, 100].map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
           </select>
         </div>
       </div>
 
       {/* Table */}
-      <DataTable columns={columns} data={paginated} emptyMessage="No products found" />
+      <DataTable
+        columns={columns}
+        data={paginated}
+        emptyMessage="No products found"
+      />
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-1 mt-3">
-          <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1} className="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50">«</button>
-          <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50">‹</button>
+          <button
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+            className="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+          >
+            «
+          </button>
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+          >
+            ‹
+          </button>
 
           {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
-            .reduce<(number | '...')[]>((acc, p, i, arr) => {
-              if (i > 0 && (p as number) - (arr[i - 1] as number) > 1) acc.push('...');
+            .filter(
+              (p) =>
+                p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1,
+            )
+            .reduce<(number | "...")[]>((acc, p, i, arr) => {
+              if (i > 0 && (p as number) - (arr[i - 1] as number) > 1)
+                acc.push("...");
               acc.push(p);
               return acc;
             }, [])
             .map((p, i) =>
-              p === '...' ? (
-                <span key={`ellipsis-${i}`} className="px-2 py-1 text-xs text-gray-400">…</span>
+              p === "..." ? (
+                <span
+                  key={`ellipsis-${i}`}
+                  className="px-2 py-1 text-xs text-gray-400"
+                >
+                  …
+                </span>
               ) : (
                 <button
                   key={p}
                   onClick={() => setCurrentPage(p as number)}
-                  className={`px-2.5 py-1 text-xs rounded border ${currentPage === p ? 'bg-green-600 text-white border-green-600' : 'border-gray-200 hover:bg-gray-50'}`}
-                >{p}</button>
-              )
+                  className={`px-2.5 py-1 text-xs rounded border ${currentPage === p ? "bg-green-600 text-white border-green-600" : "border-gray-200 hover:bg-gray-50"}`}
+                >
+                  {p}
+                </button>
+              ),
             )}
 
-          <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50">›</button>
-          <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} className="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50">»</button>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+          >
+            ›
+          </button>
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+            className="px-2 py-1 text-xs rounded border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+          >
+            »
+          </button>
         </div>
       )}
 
       {/* Modal */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Product' : 'Add Product'} className="max-w-xl">
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editing ? "Edit Product" : "Add Product"}
+        className="max-w-xl"
+      >
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Product Name</label>
-              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. 3-core cable" className="text-sm h-9" />
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Product Name
+              </label>
+              <Input
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="e.g. 3-core cable"
+                className="text-sm h-9"
+              />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Category</label>
-              <select value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Category
+              </label>
+              <select
+                value={form.categoryId}
+                onChange={(e) =>
+                  setForm({ ...form, categoryId: e.target.value })
+                }
+                className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+              >
                 <option value="">Select</option>
-                {categories.map((c: any) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                {categories.map((c: any) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Unit</label>
-              <select value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-green-500">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Unit
+              </label>
+              <select
+                value={form.unit}
+                onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+              >
                 <option value="piece">Piece</option>
                 <option value="meter">Meter</option>
                 <option value="kg">Kg</option>
@@ -470,51 +675,152 @@ export default function ProductsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Cost Price</label>
-              <Input type="number" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: e.target.value })} className="text-sm h-9" />
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Cost Price
+              </label>
+              <Input
+                type="number"
+                value={form.costPrice}
+                onChange={(e) =>
+                  setForm({ ...form, costPrice: e.target.value })
+                }
+                className="text-sm h-9"
+              />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Sale Price</label>
-              <Input type="number" value={form.salePrice} onChange={(e) => setForm({ ...form, salePrice: e.target.value })} className="text-sm h-9" />
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Sale Price
+              </label>
+              <Input
+                type="number"
+                value={form.salePrice}
+                onChange={(e) =>
+                  setForm({ ...form, salePrice: e.target.value })
+                }
+                className="text-sm h-9"
+              />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Stock</label>
-              <Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} className="text-sm h-9" />
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Stock
+              </label>
+              <Input
+                type="number"
+                value={form.stock}
+                onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                className="text-sm h-9"
+              />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Low Stock Threshold</label>
-              <Input type="number" value={form.lowStockThreshold} onChange={(e) => setForm({ ...form, lowStockThreshold: e.target.value })} className="text-sm h-9" />
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Low Stock Threshold
+              </label>
+              <Input
+                type="number"
+                value={form.lowStockThreshold}
+                onChange={(e) =>
+                  setForm({ ...form, lowStockThreshold: e.target.value })
+                }
+                className="text-sm h-9"
+              />
             </div>
           </div>
 
           {/* Images */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Product Images</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Product Images
+            </label>
             <div className="flex gap-2 mb-2">
-              <button type="button" onClick={() => setForm({ ...form, imageMethod: 'url' })} className={`px-3 py-1 text-xs rounded-md border ${form.imageMethod === 'url' ? 'bg-green-50 border-green-300 text-green-700' : 'border-gray-200 text-gray-600'}`}>External URL</button>
-              <button type="button" onClick={() => setForm({ ...form, imageMethod: 'upload' })} className={`px-3 py-1 text-xs rounded-md border ${form.imageMethod === 'upload' ? 'bg-green-50 border-green-300 text-green-700' : 'border-gray-200 text-gray-600'}`}>Upload File</button>
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, imageMethod: "url" })}
+                className={`px-3 py-1 text-xs rounded-md border ${form.imageMethod === "url" ? "bg-green-50 border-green-300 text-green-700" : "border-gray-200 text-gray-600"}`}
+              >
+                External URL
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, imageMethod: "upload" })}
+                className={`px-3 py-1 text-xs rounded-md border ${form.imageMethod === "upload" ? "bg-green-50 border-green-300 text-green-700" : "border-gray-200 text-gray-600"}`}
+              >
+                Upload File
+              </button>
             </div>
             <div className="flex gap-2">
-              {form.imageMethod === 'url' ? (
-                <Input value={form.currentImage} onChange={(e) => setForm({ ...form, currentImage: e.target.value })} placeholder="https://example.com/image.jpg" className="text-sm h-9 flex-1" />
+              {form.imageMethod === "url" ? (
+                <Input
+                  value={form.currentImage}
+                  onChange={(e) =>
+                    setForm({ ...form, currentImage: e.target.value })
+                  }
+                  placeholder="https://example.com/image.jpg"
+                  className="text-sm h-9 flex-1"
+                />
               ) : (
-                <input type="file" accept="image/*" onChange={(e) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = (ev) => setForm({ ...form, currentImage: ev.target?.result as string }); reader.readAsDataURL(file); } }} className="flex-1 text-xs" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (ev) =>
+                        setForm({
+                          ...form,
+                          currentImage: ev.target?.result as string,
+                        });
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="flex-1 text-xs"
+                />
               )}
-              <Button size="sm" variant="outline" className="text-xs h-9 border-green-600 text-green-600" onClick={addImage}>Add</Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs h-9 border-green-600 text-green-600"
+                onClick={addImage}
+              >
+                Add
+              </Button>
             </div>
             <div className="flex gap-2 mt-2 flex-wrap">
               {form.images.map((img, idx) => (
                 <div key={idx} className="relative">
-                  <img src={img} alt="" className="w-12 h-12 rounded object-cover" />
-                  <button onClick={() => removeImage(idx)} className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">x</button>
+                  <img
+                    src={img}
+                    alt=""
+                    className="w-12 h-12 rounded object-cover"
+                  />
+                  <button
+                    onClick={() => removeImage(idx)}
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs flex items-center justify-center"
+                  >
+                    x
+                  </button>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button size="sm" variant="outline" className="text-xs h-8" onClick={() => setModalOpen(false)}>Cancel</Button>
-            <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white text-xs h-8" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : editing ? 'Update' : 'Create'}</Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs h-8"
+              onClick={() => setModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white text-xs h-8"
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? "Saving..." : editing ? "Update" : "Create"}
+            </Button>
           </div>
         </div>
       </Modal>
